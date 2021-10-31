@@ -1,0 +1,14 @@
+FROM arm32v7/python:3.7-slim-buster
+
+WORKDIR /app
+
+RUN apt-get -y update
+RUN apt-get -y install python3-pip libgpiod2 python3-rpi.gpio
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+COPY requirements.txt ./
+RUN pip3 install -r requirements.txt
+
+COPY . .
+
+CMD [ "python3", "-u", "./main.py" ]

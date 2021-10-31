@@ -69,6 +69,7 @@ namespace SensorToCloudModule
                 throw new InvalidOperationException("UserContext doesn't contain " + "expected values");
             }
 
+            Console.WriteLine("received message in sensor to cloud module");
             byte[] messageBytes = message.GetBytes();
             string messageString = Encoding.UTF8.GetString(messageBytes);
             Console.WriteLine($"Received message: {counterValue}, Body: [{messageString}]");

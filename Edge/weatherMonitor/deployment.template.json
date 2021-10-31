@@ -67,34 +67,24 @@
               "createOptions": {}
             }
           },
-          "SimulatedTemperatureSensor": {
+          "temperatureMonitor": {
             "version": "1.0",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0",
-              "createOptions": {}
-            }
-          },
-          "DataAcquisitionModule": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULES.DataAcquisitionModule}",
-              "createOptions": {}
-            }
-          },
-          "SampleModule": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULES.SampleModule}",
-              "createOptions": {}
+              "image": "${MODULES.temperatureMonitor}",
+              "createOptions": {
+                "HostConfig": {
+                  "Devices": [
+                    {
+                      "PathOnHost": "/dev/gpiomem",
+                      "PathInContainer": "/dev/gpiomem",
+                      "CgroupPermissions": "rwm"
+                    }
+                  ]
+                }
+              }
             }
           }
         }
@@ -104,10 +94,8 @@
       "properties.desired": {
         "schemaVersion": "1.1",
         "routes": {
-          "SensorToCloudModuleToIoTHub": "FROM /messages/modules/SensorToCloudModule/outputs/* INTO $upstream",
-          "sensorToSensorToCloudModule": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/SensorToCloudModule/inputs/input1\")",
-          "DataAcquisitionModuleToIoTHub": "FROM /messages/modules/DataAcquisitionModule/outputs/* INTO $upstream",
-          "SampleModuleToIoTHub": "FROM /messages/modules/SampleModule/outputs/* INTO $upstream"
+          "temperatureMonitorToIoTHub": "FROM /messages/modules/temperatureMonitor/outputs/temperatureHumidityOutput INTO BrokeredEndpoint(\"/modules/SensorToCloudModule/inputs/input1\")",
+          "SensorToCloudModuleToIoTHub": "FROM /messages/modules/SensorToCloudModule/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
