@@ -82,9 +82,12 @@ namespace SensorToCloudModule
                     {
                         pipeMessage.Properties.Add(prop.Key, prop.Value);
                     }
+              
+                    byte[] outputMessageBytes = pipeMessage.GetBytes();
+                    string outputMessageString = Encoding.UTF8.GetString(outputMessageBytes);
+                    Console.WriteLine($"Received message sent to Iot Hub: {outputMessageString}");
+
                     await moduleClient.SendEventAsync("output1", pipeMessage);
-                
-                    Console.WriteLine("Received message sent");
                 }
             }
             return MessageResponse.Completed;
